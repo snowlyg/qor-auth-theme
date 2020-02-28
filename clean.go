@@ -6,7 +6,6 @@ import (
 	"html/template"
 	"io/ioutil"
 	"net/http"
-	"path/filepath"
 	"strings"
 
 	"github.com/fatih/color"
@@ -68,14 +67,12 @@ func New(config *auth.Config) *auth.Auth {
 	if config.Render == nil {
 		yamlBackend := yaml.New()
 		I18n := i18n.New(yamlBackend)
-		for _, gopath := range append([]string{filepath.Join(utils.AppRoot, "vendor")}, utils.GOPATH()...) {
-			filePath := filepath.Join(gopath, "src", "config/auth/themes/locales/zh-CN.yml")
-			if content, err := ioutil.ReadFile(filePath); err == nil {
-				translations, _ := yamlBackend.LoadYAMLContent(content)
-				for _, translation := range translations {
-					_ = I18n.AddTranslation(translation)
-				}
-				break
+
+		filePath := registerviews.DetectViewsDir("github.com/snowlyg", "qor-auth-theme", "locales")
+		if content, err := ioutil.ReadFile(filePath); err == nil {
+			translations, _ := yamlBackend.LoadYAMLContent(content)
+			for _, translation := range translations {
+				_ = I18n.AddTranslation(translation)
 			}
 		}
 
@@ -95,7 +92,7 @@ func New(config *auth.Config) *auth.Auth {
 	}
 
 	// 模版加载是前面覆盖后面
-	if err := config.Render.AssetFileSystem.RegisterPath(registerviews.DetectViewsDir("github.com/snowlyg/", "qor-auth-theme", "")); err != nil {
+	if err := config.Render.AssetFileSystem.RegisterPath(registerviews.DetectViewsDir("github.com/snowlyg", "qor-auth-theme", "")); err != nil {
 		color.Red(fmt.Sprintf(" Auth.Render.AssetFileSystem.RegisterPath %v\n", err))
 	}
 
