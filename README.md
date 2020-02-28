@@ -1,2 +1,2 @@
 # qor-auth-theme
-theme for qor-admin
+theme for qor-auth
