@@ -58,7 +58,10 @@ func New(config *auth.Config) *auth.Auth {
 	if config == nil {
 		config = &auth.Config{}
 	}
-	config.URLPrefix = "admin"
+
+	if config.URLPrefix == "" {
+		config.URLPrefix = "auth"
+	}
 
 	if config.DB == nil {
 		fmt.Print("请为认证主题配置 *gorm.DB")
